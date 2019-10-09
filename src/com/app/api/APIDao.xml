@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >  
+<mapper namespace="com.app.api.APIDao" >  
+    <select id="getOrders" resultType="java.lang.String">
+    	select accession_number from movetask where exam_status!='ORDER_CA' and accession_number=#{accession_number}
+    </select>
+    
+    <insert id="newOrder" parameterType="java.util.Map">  
+        insert into movetask(hospital,department_mode,department_src,
+	patient_name,patient_gender,patient_birthday,
+	patient_age,patient_id,study_date,
+	study_time,study_modality,procedure_step,
+	accession_number,inpatient_number,outpatient_number,study_instance_uid,study_source,exam_status)
+         values(#{orderMap[hospital]},#{orderMap[department_mode]},#{orderMap[department_src]},
+	#{orderMap[patient_name]},#{orderMap[patient_gender]},#{orderMap[patient_birthday]},
+	#{orderMap[patient_age]},#{orderMap[patient_id]},#{orderMap[study_date]},
+	#{orderMap[study_time]},#{orderMap[study_modality]},#{orderMap[procedure_step]},
+	#{orderMap[accession_number]},#{orderMap[inpatient_number]},
+	#{orderMap[outpatient_number]},#{orderMap[study_instance_uid]},#{orderMap[study_source]},'NEW_ORDER')
+    </insert> 
+    <update id="updateOrder" parameterType="java.util.Map">  
+        update movetask set hospital=#{orderMap[hospital]},department_mode=#{orderMap[department_mode]}
+        ,department_src=#{orderMap[department_src]},	patient_name=#{orderMap[patient_name]},
+        patient_gender=#{orderMap[patient_gender]},patient_birthday=#{orderMap[patient_birthday]},
+	patient_age=#{orderMap[patient_age]},patient_id=#{orderMap[patient_id]},
+	study_date=#{orderMap[study_date]},	study_time=#{orderMap[study_time]},
+	study_modality=#{orderMap[study_modality]},	procedure_step=#{orderMap[procedure_step]},
+	accession_number=#{orderMap[accession_number]},	inpatient_number=#{orderMap[inpatient_number]},
+	outpatient_number=#{orderMap[outpatient_number]},study_instance_uid=#{orderMap[study_instance_uid]},
+	study_source=#{orderMap[study_source]} where qrcode=#{orderMap[qrcode]}
+    </update> 
+    
+    
+    <update id="saveQRCode" parameterType="java.lang.String">
+    	update movetask set qrcode=#{qrcode} where accession_number=#{accession_number}
+    </update> 
+    <update id="updateExamStatus" parameterType="java.lang.String">
+    	update movetask set exam_status=#{examStatus},status=#{status},study_instance_uid=#{accession_number} where qrcode=#{qrcode}
+    </update> 
+     
+    
+    <update id="newReport" parameterType="java.lang.String">  
+        update movetask set report_path=#{file_address},report_id=#{report_id},exam_status='REPORT_PUB' where qrcode=#{qrcode}
+    </update> 
+    
+     <update id="reportCA" parameterType="java.lang.String">  
+        update movetask set exam_status='REPORT_CA', status='FILE_MOVE_SUCCESS' where report_id=#{report_id}
+    </update> 
+    
+    <update id="updatePayStatus" parameterType="java.lang.String">
+    	update movetask set pay_status=#{pay_status} where qrcode=#{qrcode}
+    </update> 
+    
+</mapper>  

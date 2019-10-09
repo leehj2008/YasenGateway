@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="app" default="release" basedir=".">
+	<tstamp>
+		<format property="TODAY" pattern="yyyy-MM-dd HH:mm:ss" />
+	</tstamp>
+	<property file="build.properties" />
+	<property name="jar.name" value="${project.name}-${version}.jar" />
+	<property name="src.dir" value="${basedir}/src" />
+	<property name="lib.dir" value="${basedir}/lib" />
+	<property name="bin.dir" value="${basedir}/bin" />
+	<property name="release.dir" value="${basedir}/lib" />
+
+	<path id="classpath">
+		<fileset dir="${lib.dir}">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+
+
+	<target name="compile" description="编译核心代码">
+		<javac srcdir="${src.dir}" destdir="${bin.dir}" encoding="utf-8" classpathref="classpath" target="1.8" source="1.8" debug="true" includeantruntime="false" />
+		<copy todir="${bin.dir}" overwrite="true">
+			<fileset dir="${src.dir}">
+				<include name="**/*.properties" />
+				<include name="**/*.xml" />
+				<include name="**/*.xsd" />
+			</fileset>
+		</copy>
+	</target>
+
+
+	<target name="release" depends="compile" description="生成核心jar文件">
+		<jar destfile="${release.dir}/${jar.name}" basedir="${bin.dir}">
+			<manifest>
+				<attribute name="Built-By" value="${user.name}" />
+				<section name="${project.name}">
+					<attribute name="Implementation-Title" value="${title}" />
+					<attribute name="Implementation-Version" value="${version} ${TODAY}" />
+					<attribute name="Implementation-Vendor" value="${Vendor}" />
+				</section>
+			</manifest>
+		</jar>
+	</target>
+	
+
+</project>

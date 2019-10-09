@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >  
+<mapper namespace="com.app.task.TaskDao" >  
+    
+    <select id="getTask" resultType="com.app.task.Task">  
+        select ckey,accession_number as AccessionNumber,status,study_instance_uid as StudyInstanceUID from movetask  
+        where status=#{status}  order by ckey limit 10
+    </select> 
+    <select id="getMoveTask" resultType="com.app.task.Task">  
+        select ckey,study_instance_uid as AccessionNumber,status,study_instance_uid as StudyInstanceUID,patient_id as patientid,department_mode as Modality from movetask  
+        where status=#{status} and exam_status in('EXAMED','REPORT_PUB') 
+        and qrcode is not null and length(qrcode)>0
+        and pay_status='Y' order by ckey limit 10
+    </select> 
+    <select id="getZipTask" resultType="com.app.task.Task">  
+        select ckey,accession_number as AccessionNumber,qrcode,patient_id as patientid,department_mode as Modality from movetask  where status='MOVE_SUCCESS' 
+        order by ckey limit 1
+    </select>  
+     <select id="getFtpTask" resultType="com.app.task.Task">  
+        select ckey,accession_number as AccessionNumber,qrcode,patient_id as patientid,department_mode as Modality from movetask  
+        where status='ZIP_SUCCESS' 
+        order by ckey limit 1
+    </select> 
+    <select id="getRptTask" resultType="com.app.task.Task">  
+        select ckey,report_id,report_path from movetask  
+        where status='FILE_MOVE_SUCCESS' and pay_status='Y' and exam_status='REPORT_PUB'
+        and report_id is not null and report_id!='' and report_path is not null and report_path!=''
+        order by ckey limit 1
+    </select> 
+    <select id="getDeadTask" resultType="com.app.task.Task">  
+        select ckey,accession_number,status,study_instance_uid from movetask  
+        where status in ('MOVE_START','MOVE_PENDING') and timestampdiff(MINUTE,startMoveTime,current_timestamp)>12 order by ckey limit 100
+    </select>  
+    <update id="updateTask" >  
+        update movetask set status=#{status} where ckey=#{ckey} 
+    </update> 
+    <update id="updateTaskStartMove" >  
+        update movetask set status='MOVE_START',startMoveTime=current_timestamp where ckey=#{ckey} 
+    </update>
+    <update id="updateMoveTaskCkey" >  
+        update movetask set status=#{status},complete=#{complete},remain=#{remain},failed=#{failed} where ckey=#{ckey} 
+    </update>
+    <update id="updateMoveTask" >  
+        update movetask set status=#{status},complete=#{complete},remain=#{remain},failed=#{failed} where accession_number=#{accessionNumber} 
+    </update>
+</mapper>  

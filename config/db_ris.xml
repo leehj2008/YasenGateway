@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="UTF-8"?><!--comment -->
+<config>
+	<siteid>086G63</siteid>
+	<connection>
+		<driver>com.mysql.jdbc.Driver</driver>
+		<url>jdbc:mysql://10.101.202.10:3306/gecris</url>
+		<user>root</user>
+		<password>root</password>
+	</connection>
+	<!-- 初始Study结果集 Count -->
+	<getRisExamSql><![CDATA[
+		select P.PatientIntraID,PS.ProcedureStepContrastAgent as ProcedureStepCode,PS.ProcedureStepDescriptions,
+		P.PatientNameEnglish,P.PatientNameChinese,P.PatientGender,P.PatientBirtday,
+		E.ExamAccessionID,E.PreExamExamDate,E.PreExamScheduleDate,
+		MT.ModalityTypeName
+		from ExamInfo E inner join ProcedureStepInfo PS on E.ProcedureStepID=PS.ProcedureStepID
+		inner join OrderInfo O on E.OrderID=O.OrderID 
+		inner join PatientInfo P on O.PatientIntraID=P.PatientIntraID 
+		inner join ModalityInfo M on E.ModalityID=M.ModalityID  
+		inner join ModalityTypeInfo MT on M.ModalityTypeID=MT.ModalityTypeID
+		where ExamAccessionID=
+		]]>
+	</getRisExamSql>
+	
+</config>
